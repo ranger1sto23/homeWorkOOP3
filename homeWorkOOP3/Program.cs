@@ -22,12 +22,14 @@ namespace homeWorkOOP3
 
         public void BlockPlayer(int indexBlock)
         {
+            if(TryGetPlayer(indexBlock, out Player player))
             _players[indexBlock].BlockPlayer();
         }
 
         public void UnlockPlayer(int indexUnlock)
         {
-            _players[indexUnlock].UnlockPlayer();
+            if (TryGetPlayer(indexUnlock, out Player player))
+                _players[indexUnlock].UnlockPlayer();
         }
 
         public void PrintPlayer()
@@ -38,9 +40,16 @@ namespace homeWorkOOP3
             }
         }
 
-        internal void RemovePlayer(int indexRemove)
+        public void RemovePlayer(int indexRemove)
         {
-           _players.RemoveAt(indexRemove);
+            if(TryGetPlayer(indexRemove, out Player player))
+                _players.RemoveAt(indexRemove);
+        }
+
+        private bool TryGetPlayer(int id, out Player player  )
+        { 
+             player = _players.Where(currentPlayer => currentPlayer.ID == id).FirstOrDefault();
+            return player != null;
         }
     }
 
@@ -113,13 +122,13 @@ namespace homeWorkOOP3
                         AddPlayer(database);
                         break;
                     case CommandBlock:
-                        BlockPlayer(database, HintBlockPlayer);
+                        ExecuteCommand(HintBlockPlayer,database.BlockPlayer);
                         break;
                     case CommandUnlock:
-                        UnlockPlayer(database, HintUnlockPlayer);
+                        ExecuteCommand(HintUnlockPlayer, database.UnlockPlayer);
                         break;
                     case CommandRemove:
-                        RemovePlayer(database, HintRemovePlayer);
+                        ExecuteCommand(HintRemovePlayer, database.RemovePlayer);
                         break;
 
                     case CommandPrint:
@@ -137,29 +146,15 @@ namespace homeWorkOOP3
 
         }
 
-        private static void RemovePlayer(Database database, string hintRemovePlayer)
+        private static void ExecuteCommand(string hintRemovePlayer,Action<int> action)
         {
             Console.WriteLine(hintRemovePlayer);
             string input = Console.ReadLine();
             if (int.TryParse(input, out int result))
-                database.RemovePlayer(result-1);
+                action.Invoke(result);
         }
 
-        private static void UnlockPlayer(Database database, string hintUnlockPlayer)
-        {
-            Console.WriteLine(hintUnlockPlayer);
-            string input = Console.ReadLine();
-            if (int.TryParse(input, out int result))
-                database.UnlockPlayer(result-1);
-        }
-
-        private static void BlockPlayer(Database database,string hintBlockPlayer)
-        {
-            Console.WriteLine(hintBlockPlayer); 
-            string input = Console.ReadLine();
-            if(int.TryParse(input,out int result))
-            database.BlockPlayer(result-1);
-        }
+       
 
         private static void PrintPlayer(Database database)
         {
