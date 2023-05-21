@@ -8,6 +8,7 @@ namespace homeWorkOOP3
 {
     class Database
     {
+        //dsdsdsdsdsadasdasdasdas
         private List<Player> _players;
         public Database()
         {
